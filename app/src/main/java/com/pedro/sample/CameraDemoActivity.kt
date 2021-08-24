@@ -183,7 +183,7 @@ class CameraDemoActivity : AppCompatActivity(), ConnectCheckerRtsp, View.OnClick
     }
     try {
       val fos = FileOutputStream(pictureFile)
-      image.compress(Bitmap.CompressFormat.PNG, 90, fos)
+      image.compress(Bitmap.CompressFormat.JPEG, 100, fos)
       fos.close()
     } catch (e: FileNotFoundException) {
       Log.d(TAG, "File not found: " + e.message)
