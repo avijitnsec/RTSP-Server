@@ -12,12 +12,6 @@
         android:id="@+id/surfaceView"
         />
 
-<!--    <com.pedro.rtplibrary.view.OpenGlView-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent"-->
-<!--        android:id="@+id/surfaceView"-->
-<!--        />-->
-
     <TextView
         android:textSize="24sp"
         android:textColor="@color/appColor"
