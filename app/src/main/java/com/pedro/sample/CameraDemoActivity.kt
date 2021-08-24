@@ -26,6 +26,8 @@ import android.view.PixelCopy
 import android.graphics.Bitmap
 import android.os.*
 import androidx.annotation.RequiresApi
+import android.os.Build
+import android.widget.LinearLayout
 
 
 class CameraDemoActivity : AppCompatActivity(), ConnectCheckerRtsp, View.OnClickListener,
@@ -50,6 +52,36 @@ class CameraDemoActivity : AppCompatActivity(), ConnectCheckerRtsp, View.OnClick
     capture_image.setOnClickListener(this)
     rtspServerCamera1 = RtspServerCamera1(surfaceView, this, 1935)
     surfaceView.holder.addCallback(this)
+
+    hideNavigationBar()
+  }
+
+  private fun hideNavigationBar()
+  {
+    val currentApiVersion = android.os.Build.VERSION.SDK_INT;
+
+    // Hide navigation bar
+    val flags = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+            or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+            or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+            or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+            or View.SYSTEM_UI_FLAG_FULLSCREEN
+            or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
+
+    if (currentApiVersion >= Build.VERSION_CODES.KITKAT) {
+      window.decorView.systemUiVisibility = flags
+
+      // Code below is to handle presses of Volume up or Volume down.
+      // Without this, after pressing volume buttons, the navigation bar will
+      // show up and won't hide
+      val decorView = window.decorView
+      decorView
+        .setOnSystemUiVisibilityChangeListener { visibility ->
+          if (visibility and View.SYSTEM_UI_FLAG_FULLSCREEN == 0) {
+            decorView.systemUiVisibility = flags
+          }
+        }
+    }
   }
 
   override fun onNewBitrateRtsp(bitrate: Long) {

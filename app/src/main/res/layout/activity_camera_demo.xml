@@ -30,8 +30,8 @@
         android:layout_alignParentBottom="true"
         android:layout_margin="20dp"
         android:gravity="center"
-        android:weightSum="3"
-        >
+        android:id="@+id/ll_buttonList"
+        android:weightSum="3">
 
         <Button
             android:layout_weight="1"
