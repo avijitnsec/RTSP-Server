@@ -1,8 +1,7 @@
 package com.pedro.sample
 
 import android.content.ContentValues.TAG
-import android.os.Build
-import android.os.Bundle
+import android.graphics.*
 import android.view.SurfaceHolder
 import android.view.View
 import android.view.WindowManager
@@ -17,16 +16,16 @@ import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
-import android.os.Environment
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Color
 import android.util.Log
 import android.view.SurfaceView
-import android.widget.RelativeLayout
-import android.widget.TextView
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
+
+import android.view.PixelCopy
+
+import android.graphics.Bitmap
+import android.os.*
+import androidx.annotation.RequiresApi
 
 
 class CameraDemoActivity : AppCompatActivity(), ConnectCheckerRtsp, View.OnClickListener,
@@ -96,6 +95,7 @@ class CameraDemoActivity : AppCompatActivity(), ConnectCheckerRtsp, View.OnClick
     }
   }
 
+  @RequiresApi(Build.VERSION_CODES.N)
   override fun onClick(view: View) {
     when (view.id) {
       R.id.b_start_stop -> if (!rtspServerCamera1.isStreaming) {
@@ -113,8 +113,11 @@ class CameraDemoActivity : AppCompatActivity(), ConnectCheckerRtsp, View.OnClick
         tv_url.text = ""
       }
       R.id.capture_image -> try {
-//        rtspServerCamera1.switchCamera()
-        storeImage(getBitmap())
+        val mPreview = findViewById<SurfaceView>(R.id.surfaceView)
+        this.usePixelCopy(mPreview) { bitmap: Bitmap? ->
+          processBitMap(bitmap)
+        }
+
       } catch (e: CameraOpenException) {
         Toast.makeText(this, e.message, Toast.LENGTH_SHORT).show()
       }
@@ -166,23 +169,41 @@ class CameraDemoActivity : AppCompatActivity(), ConnectCheckerRtsp, View.OnClick
     }
   }
 
-  private fun getBitmap(): Bitmap {
-    var mPreview = findViewById<SurfaceView>(R.id.surfaceView)
-//    var mPreview = findViewById<TextView>(R.id.tv_url)
-
-    mPreview.isDrawingCacheEnabled = true
-    mPreview.buildDrawingCache()
-    val bitmap: Bitmap = Bitmap.createBitmap(mPreview.width, mPreview.height, Bitmap.Config.ARGB_8888)
-    var canvas: Canvas = Canvas(bitmap)
-    canvas.drawColor(Color.RED)
-    mPreview.draw(canvas)
-   // canvas.drawBitmap(mPreview, 0F, 0F, null)
-    mPreview.isDrawingCacheEnabled = false
-    return bitmap
+  private fun processBitMap(bitmap: Bitmap?) {
+    Log.d("PixelCopy", "Store the bitmap to a file")
+    storeImage(bitmap)
   }
 
+  @RequiresApi(Build.VERSION_CODES.N)
+  fun usePixelCopy(videoView: SurfaceView, callback: (Bitmap?) -> Unit) {
+    val bitmap: Bitmap = Bitmap.createBitmap(
+      videoView.width,
+      videoView.height,
+      Bitmap.Config.ARGB_8888
+    );
+    try {
+      // Create a handler thread to offload the processing of the image.
+      val handlerThread = HandlerThread("PixelCopier");
+      handlerThread.start();
+      PixelCopy.request(
+        videoView, bitmap,
+        PixelCopy.OnPixelCopyFinishedListener { copyResult ->
+          if (copyResult == PixelCopy.SUCCESS) {
+            callback(bitmap)
+          }
+          handlerThread.quitSafely();
+        },
+        Handler(handlerThread.looper)
+      )
+    } catch (e: IllegalArgumentException) {
+      callback(null)
+      // PixelCopy may throw IllegalArgumentException, make sure to handle it
+      e.printStackTrace()
+    }
+  }
 
-  private fun storeImage(image: Bitmap) {
+  // This wont work on SurfaceView
+  private fun storeImage(image: Bitmap?) {
     val pictureFile = getOutputMediaFile()
     if (pictureFile == null) {
       Log.d(
@@ -193,7 +214,9 @@ class CameraDemoActivity : AppCompatActivity(), ConnectCheckerRtsp, View.OnClick
     }
     try {
       val fos = FileOutputStream(pictureFile)
-      image.compress(Bitmap.CompressFormat.JPEG, 100, fos)
+      image!!.compress(Bitmap.CompressFormat.JPEG, 100, fos)
+      fos.flush()
+      fos.fd.sync()
       fos.close()
     } catch (e: FileNotFoundException) {
       Log.d(TAG, "File not found: " + e.message)
