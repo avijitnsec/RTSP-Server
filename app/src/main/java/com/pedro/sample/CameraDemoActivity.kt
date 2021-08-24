@@ -19,8 +19,12 @@ import java.text.SimpleDateFormat
 import java.util.*
 import android.os.Environment
 import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
 import android.util.Log
 import android.view.SurfaceView
+import android.widget.RelativeLayout
+import android.widget.TextView
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
 
@@ -164,9 +168,15 @@ class CameraDemoActivity : AppCompatActivity(), ConnectCheckerRtsp, View.OnClick
 
   private fun getBitmap(): Bitmap {
     var mPreview = findViewById<SurfaceView>(R.id.surfaceView)
+//    var mPreview = findViewById<TextView>(R.id.tv_url)
+
     mPreview.isDrawingCacheEnabled = true
     mPreview.buildDrawingCache()
     val bitmap: Bitmap = Bitmap.createBitmap(mPreview.width, mPreview.height, Bitmap.Config.ARGB_8888)
+    var canvas: Canvas = Canvas(bitmap)
+    canvas.drawColor(Color.RED)
+    mPreview.draw(canvas)
+   // canvas.drawBitmap(mPreview, 0F, 0F, null)
     mPreview.isDrawingCacheEnabled = false
     return bitmap
   }
