@@ -36,7 +36,7 @@ class CameraDemoActivity : AppCompatActivity(), ConnectCheckerRtsp, View.OnClick
     button.setOnClickListener(this)
     bRecord = findViewById(R.id.b_record)
     bRecord.setOnClickListener(this)
-    switch_camera.setOnClickListener(this)
+    capture_image.setOnClickListener(this)
     rtspServerCamera1 = RtspServerCamera1(surfaceView, this, 1935)
     surfaceView.holder.addCallback(this)
   }
@@ -100,7 +100,7 @@ class CameraDemoActivity : AppCompatActivity(), ConnectCheckerRtsp, View.OnClick
         rtspServerCamera1.stopStream()
         tv_url.text = ""
       }
-      R.id.switch_camera -> try {
+      R.id.capture_image -> try {
         rtspServerCamera1.switchCamera()
       } catch (e: CameraOpenException) {
         Toast.makeText(this, e.message, Toast.LENGTH_SHORT).show()
