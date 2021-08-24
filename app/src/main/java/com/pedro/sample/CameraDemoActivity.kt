@@ -1,5 +1,6 @@
 package com.pedro.sample
 
+import android.content.ContentValues.TAG
 import android.os.Build
 import android.os.Bundle
 import android.view.SurfaceHolder
@@ -16,6 +17,13 @@ import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
+import android.os.Environment
+import android.graphics.Bitmap
+import android.util.Log
+import android.view.SurfaceView
+import java.io.FileNotFoundException
+import java.io.FileOutputStream
+
 
 class CameraDemoActivity : AppCompatActivity(), ConnectCheckerRtsp, View.OnClickListener,
     SurfaceHolder.Callback {
@@ -101,7 +109,8 @@ class CameraDemoActivity : AppCompatActivity(), ConnectCheckerRtsp, View.OnClick
         tv_url.text = ""
       }
       R.id.capture_image -> try {
-        rtspServerCamera1.switchCamera()
+//        rtspServerCamera1.switchCamera()
+        storeImage(getBitmap())
       } catch (e: CameraOpenException) {
         Toast.makeText(this, e.message, Toast.LENGTH_SHORT).show()
       }
@@ -151,6 +160,59 @@ class CameraDemoActivity : AppCompatActivity(), ConnectCheckerRtsp, View.OnClick
       else -> {
       }
     }
+  }
+
+  private fun getBitmap(): Bitmap {
+    var mPreview = findViewById<SurfaceView>(R.id.surfaceView)
+    mPreview.isDrawingCacheEnabled = true
+    mPreview.buildDrawingCache()
+    val bitmap: Bitmap = Bitmap.createBitmap(mPreview.width, mPreview.height, Bitmap.Config.ARGB_8888)
+    mPreview.isDrawingCacheEnabled = false
+    return bitmap
+  }
+
+
+  private fun storeImage(image: Bitmap) {
+    val pictureFile = getOutputMediaFile()
+    if (pictureFile == null) {
+      Log.d(
+        TAG,
+        "Error creating media file, check storage permissions: "
+      ) // e.getMessage());
+      return
+    }
+    try {
+      val fos = FileOutputStream(pictureFile)
+      image.compress(Bitmap.CompressFormat.PNG, 90, fos)
+      fos.close()
+    } catch (e: FileNotFoundException) {
+      Log.d(TAG, "File not found: " + e.message)
+    } catch (e: IOException) {
+      Log.d(TAG, "Error accessing file: " + e.message)
+    }
+  }
+
+  private fun getOutputMediaFile(): File? {
+    // To be safe, you should check that the SDCard is mounted
+    // using Environment.getExternalStorageState() before doing this.
+    val mediaStorageDir = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).absolutePath)
+
+    // This location works best if you want the created images to be shared
+    // between applications and persist after your app has been uninstalled.
+
+    // Create the storage directory if it does not exist
+    if (!mediaStorageDir.exists()) {
+      if (!mediaStorageDir.mkdirs()) {
+        return null
+      }
+    }
+    // Create a media file name
+    val timeStamp = SimpleDateFormat("ddMMyyyy_HHmm").format(Date())
+    val mediaFile: File
+    val mImageName = "MI_$timeStamp.jpg"
+    mediaFile = File(mediaStorageDir.path + File.separator + mImageName)
+    Toast.makeText(this, mediaFile.absolutePath, Toast.LENGTH_SHORT).show()
+    return mediaFile
   }
 
   override fun surfaceCreated(surfaceHolder: SurfaceHolder) {
