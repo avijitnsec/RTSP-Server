@@ -27,7 +27,6 @@ import android.graphics.Bitmap
 import android.os.*
 import androidx.annotation.RequiresApi
 import android.os.Build
-import android.widget.LinearLayout
 
 
 class CameraDemoActivity : AppCompatActivity(), ConnectCheckerRtsp, View.OnClickListener,
@@ -37,14 +36,19 @@ class CameraDemoActivity : AppCompatActivity(), ConnectCheckerRtsp, View.OnClick
   private lateinit var button: Button
   private lateinit var bRecord: Button
 
+  private var fname: String = "default"
   private var currentDateAndTime = ""
   private lateinit var folder: File
+
+  enum class SupportedFileType {
+    TYPE_JPG, TYPE_MP4
+  }
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
     setContentView(R.layout.activity_camera_demo)
-    folder = File(getExternalFilesDir(null)!!.absolutePath + "/rtmp-rtsp-stream-client-java")
+
     button = findViewById(R.id.b_start_stop)
     button.setOnClickListener(this)
     bRecord = findViewById(R.id.b_record)
@@ -121,6 +125,11 @@ class CameraDemoActivity : AppCompatActivity(), ConnectCheckerRtsp, View.OnClick
     }
   }
 
+  private fun isRTCWorking(): Boolean {
+    // TODO: Need implementation
+    return true
+  }
+
   override fun onAuthSuccessRtsp() {
     runOnUiThread {
       Toast.makeText(this@CameraDemoActivity, "Auth success", Toast.LENGTH_SHORT).show()
@@ -149,7 +158,6 @@ class CameraDemoActivity : AppCompatActivity(), ConnectCheckerRtsp, View.OnClick
         this.usePixelCopy(mPreview) { bitmap: Bitmap? ->
           processBitMap(bitmap)
         }
-
       } catch (e: CameraOpenException) {
         Toast.makeText(this, e.message, Toast.LENGTH_SHORT).show()
       }
@@ -158,14 +166,9 @@ class CameraDemoActivity : AppCompatActivity(), ConnectCheckerRtsp, View.OnClick
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
           if (!rtspServerCamera1.isRecording) {
             try {
-              if (!folder.exists()) {
-                folder.mkdir()
-              }
-              val sdf = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault())
-              currentDateAndTime = sdf.format(Date())
               if (!rtspServerCamera1.isStreaming) {
                 if (rtspServerCamera1.prepareAudio() && rtspServerCamera1.prepareVideo()) {
-                  rtspServerCamera1.startRecord(folder.absolutePath + "/" + currentDateAndTime + ".mp4")
+                  rtspServerCamera1.startRecord(getOutputMediaFile(SupportedFileType.TYPE_MP4).toString())
                   bRecord.setText(R.string.stop_record)
                   Toast.makeText(this, "Recording... ", Toast.LENGTH_SHORT).show()
                 } else {
@@ -175,7 +178,7 @@ class CameraDemoActivity : AppCompatActivity(), ConnectCheckerRtsp, View.OnClick
                   ).show()
                 }
               } else {
-                rtspServerCamera1.startRecord(folder.absolutePath + "/" + currentDateAndTime + ".mp4")
+                rtspServerCamera1.startRecord(getOutputMediaFile(SupportedFileType.TYPE_MP4).toString())
                 bRecord.setText(R.string.stop_record)
                 Toast.makeText(this, "Recording... ", Toast.LENGTH_SHORT).show()
               }
@@ -188,7 +191,8 @@ class CameraDemoActivity : AppCompatActivity(), ConnectCheckerRtsp, View.OnClick
             rtspServerCamera1.stopRecord()
             bRecord.setText(R.string.start_record)
             Toast.makeText(
-              this, "file " + currentDateAndTime + ".mp4 saved in " + folder.absolutePath,
+              this,
+              getOutputMediaFile(SupportedFileType.TYPE_MP4).toString(),
               Toast.LENGTH_SHORT
             ).show()
           }
@@ -199,11 +203,6 @@ class CameraDemoActivity : AppCompatActivity(), ConnectCheckerRtsp, View.OnClick
       else -> {
       }
     }
-  }
-
-  private fun processBitMap(bitmap: Bitmap?) {
-    Log.d("PixelCopy", "Store the bitmap to a file")
-    storeImage(bitmap)
   }
 
   @RequiresApi(Build.VERSION_CODES.N)
@@ -234,9 +233,14 @@ class CameraDemoActivity : AppCompatActivity(), ConnectCheckerRtsp, View.OnClick
     }
   }
 
+  private fun processBitMap(bitmap: Bitmap?) {
+    Log.d("PixelCopy", "Store the bitmap to a file")
+    storeImage(bitmap)
+  }
+
   // This wont work on SurfaceView
   private fun storeImage(image: Bitmap?) {
-    val pictureFile = getOutputMediaFile()
+    val pictureFile = getOutputMediaFile(SupportedFileType.TYPE_JPG)
     if (pictureFile == null) {
       Log.d(
         TAG,
@@ -257,24 +261,48 @@ class CameraDemoActivity : AppCompatActivity(), ConnectCheckerRtsp, View.OnClick
     }
   }
 
-  private fun getOutputMediaFile(): File? {
+  private fun outDirectoryName(): File {
+    var failedToCreate: Boolean = false
+    var directoryExists: Boolean = false
+    var rtcWorking: Boolean = false
+    rtcWorking = isRTCWorking()
+
+    var currentDate = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(Date()) ?: fname
+
+    var mediaStorageDir = File(
+      Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
+      currentDate
+    )
+
+    if (!mediaStorageDir!!.exists()) {
+      if (!mediaStorageDir!!.mkdirs()) {
+        failedToCreate = true
+        Log.d("dir", "Failed to create directory")
+      }
+    } else {
+      directoryExists = true
+    }
+    return mediaStorageDir
+  }
+
+  private fun getOutputMediaFile(outputType: SupportedFileType ): File? {
     // To be safe, you should check that the SDCard is mounted
     // using Environment.getExternalStorageState() before doing this.
-    val mediaStorageDir = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).absolutePath)
+    val mediaStorageDir = outDirectoryName()
 
-    // This location works best if you want the created images to be shared
-    // between applications and persist after your app has been uninstalled.
-
-    // Create the storage directory if it does not exist
-    if (!mediaStorageDir.exists()) {
-      if (!mediaStorageDir.mkdirs()) {
-        return null
-      }
-    }
     // Create a media file name
     val timeStamp = SimpleDateFormat("ddMMyyyy_HHmm").format(Date())
     val mediaFile: File
-    val mImageName = "MI_$timeStamp.jpg"
+
+    // Decide the file extension based on the argument
+    // Please make sure the file type is supported in SupportedFileType
+    var fileExtension: String = when (outputType)
+    {
+      SupportedFileType.TYPE_JPG -> ".jpg"
+      SupportedFileType.TYPE_MP4 -> ".mp4"
+    }
+
+    val mImageName = "MI_$timeStamp$fileExtension"
     mediaFile = File(mediaStorageDir.path + File.separator + mImageName)
     Toast.makeText(this, mediaFile.absolutePath, Toast.LENGTH_SHORT).show()
     return mediaFile
