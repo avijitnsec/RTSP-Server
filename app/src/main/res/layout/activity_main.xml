@@ -1,14 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/white"
+    android:padding="5dp"
     android:id="@+id/activity_example_rtmp"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <Button
-        android:id="@+id/b_camera_demo"
-        android:layout_width="wrap_content"
-        android:layout_centerInParent="true"
-        android:layout_height="wrap_content"
-        android:text="@string/camera_demo"
-        />
+<!--    <Button-->
+<!--        android:id="@+id/b_camera_demo"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_centerInParent="true"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="@string/camera_demo"-->
+<!--        />-->
+    <com.akki.circlemenu.CircleMenu
+        android:id="@+id/circle_menu"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:menu_background_color="@array/menu_back_colors"
+        app:menu_close_duration="300"
+        app:menu_icons="@array/menus"
+        app:menu_open_duration="400"
+        app:menu_orientation="circle"
+        app:menu_radius="100dp"/>
 </RelativeLayout>
