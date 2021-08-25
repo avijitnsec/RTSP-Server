@@ -76,7 +76,7 @@ class CameraDemoActivity : AppCompatActivity(), ConnectCheckerRtsp, View.OnClick
             captureScreenShot()
         })
 
-//        ll_buttonList.visibility = View.INVISIBLE
+        ll_buttonList.visibility = View.INVISIBLE
 
     }
 
