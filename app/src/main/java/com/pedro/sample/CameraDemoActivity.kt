@@ -58,6 +58,9 @@ class CameraDemoActivity : AppCompatActivity(), ConnectCheckerRtsp, View.OnClick
     surfaceView.holder.addCallback(this)
 
     hideNavigationBar()
+
+   // ll_buttonList.visibility = View.INVISIBLE
+
   }
 
   private fun hideNavigationBar()

@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <array name="menus">
-        <item>@drawable/ic_baseline_edit_location_24</item>
-        <item>@drawable/ic_baseline_settings_24</item>
-        <item>@drawable/ic_baseline_delete_forever_24</item>
-        <item>@drawable/ic_baseline_person_search_24</item>
+        <item>@drawable/ic_baseline_rtsp_start_streaming_24</item>
+        <item>@drawable/ic_baseline_video_start_recording_24</item>
+        <item>@drawable/ic_baseline_wifi_signal_strong_24</item>
     </array>
 
     <array name="menu_back_colors">
         <item>@android:color/holo_blue_light</item>
-        <item>@android:color/holo_green_dark</item>
         <item>@android:color/holo_red_light</item>
-        <item>@android:color/holo_purple</item>
+        <item>@android:color/holo_green_dark</item>
     </array>
 </resources>

@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -26,23 +27,30 @@ class MainActivity : AppCompatActivity(), OnCircleMenuItemClicked {
 
     val circularMenu = findViewById<CircleMenu>(R.id.circle_menu)
 
-    circularMenu.setOnMenuItemClickListener(this)
+//    val item1 =
 
-//    b_camera_demo.setOnClickListener {
-//      if (!hasPermissions(this, *PERMISSIONS)) {
-//        ActivityCompat.requestPermissions(this, PERMISSIONS, 1)
-//      } else {
-//        startActivity(Intent(this, CameraDemoActivity::class.java))
-//      }
+    circularMenu.setOnMenuItemClickListener(this)
+//    circle_menu.setOnLongClickListener{
+//      startActivity(Intent(this, CameraDemoActivity::class.java))
+//      true
 //    }
+
+
+
+    b_camera_demo.setOnClickListener {
+      if (!hasPermissions(this, *PERMISSIONS)) {
+        ActivityCompat.requestPermissions(this, PERMISSIONS, 1)
+      } else {
+        startActivity(Intent(this, CameraDemoActivity::class.java))
+      }
+    }
   }
 
   override fun onMenuItemClicked(id: Int) {
     when (id) {
-      R.drawable.ic_baseline_delete_forever_24 -> showToast("Delete Button clicked")
-      R.drawable.ic_baseline_person_search_24 -> showToast("Person Button clicked")
-      R.drawable.ic_baseline_settings_24 -> showToast("Setting Button clicked")
-      R.drawable.ic_baseline_edit_location_24 -> showToast("Location Button clicked")
+      R.drawable.ic_baseline_rtsp_start_streaming_24 -> showToast("Start Streaming")
+      R.drawable.ic_baseline_video_start_recording_24 -> showToast("Start Video recording")
+      R.drawable.ic_baseline_wifi_signal_strong_24 -> showToast("Wifi Connected!")
     }
   }
 

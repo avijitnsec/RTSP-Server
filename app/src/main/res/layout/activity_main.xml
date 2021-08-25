@@ -2,19 +2,25 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+
     android:background="@color/white"
-    android:padding="5dp"
     android:id="@+id/activity_example_rtmp"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-<!--    <Button-->
-<!--        android:id="@+id/b_camera_demo"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_centerInParent="true"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:text="@string/camera_demo"-->
-<!--        />-->
+    <Button
+        android:id="@+id/b_camera_demo"
+        android:background="@color/white"
+        android:padding="4dp"
+        android:drawableLeft="@drawable/ic_baseline_play_24"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_marginLeft="160dp"
+        android:layout_marginTop="600dp"
+        android:text="Play"
+        android:textAlignment="center"
+         />
+
     <com.akki.circlemenu.CircleMenu
         android:id="@+id/circle_menu"
         android:layout_width="match_parent"
@@ -24,5 +30,9 @@
         app:menu_icons="@array/menus"
         app:menu_open_duration="400"
         app:menu_orientation="circle"
-        app:menu_radius="100dp"/>
+        app:menu_radius="100dp"
+        tools:layout_editor_absoluteX="79dp"
+        tools:layout_editor_absoluteY="0dp">
+
+    </com.akki.circlemenu.CircleMenu>
 </RelativeLayout>
