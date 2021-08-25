@@ -36,6 +36,9 @@ class CameraDemoActivity : AppCompatActivity(), ConnectCheckerRtsp, View.OnClick
     private lateinit var button: Button
     private lateinit var bRecord: Button
 
+    private var vRecoding = false
+    private var vStreaming = false
+
     private var fname: String = "default"
     private var currentDateAndTime = ""
     private lateinit var folder: File
@@ -44,12 +47,20 @@ class CameraDemoActivity : AppCompatActivity(), ConnectCheckerRtsp, View.OnClick
         TYPE_JPG, TYPE_MP4
     }
 
-
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         setContentView(R.layout.activity_camera_demo)
+
+        if (savedInstanceState == null) {
+            val extras = intent.extras
+
+            if(extras != null) {
+                vRecoding = extras.getBoolean("isVideoRecordingEnabled")
+                vStreaming = extras.getBoolean("isVideoStreamingEnabled")
+            }
+        }
 
         button = findViewById(R.id.b_start_stop)
         button.setOnClickListener(this)
@@ -65,7 +76,7 @@ class CameraDemoActivity : AppCompatActivity(), ConnectCheckerRtsp, View.OnClick
             captureScreenShot()
         })
 
-        ll_buttonList.visibility = View.INVISIBLE
+//        ll_buttonList.visibility = View.INVISIBLE
 
     }
 
