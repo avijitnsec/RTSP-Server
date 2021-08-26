@@ -70,14 +70,6 @@ class CameraDemoActivity : AppCompatActivity(), ConnectCheckerRtsp, View.OnClick
         surfaceView.setOnClickListener(View.OnClickListener {
             captureScreenShot()
         })
-
-        when(vStreaming){
-            true -> rtspStreaming()
-        }
-
-        when(vRecoding){
-            true->videoRecording()
-        }
     }
 
     private fun hideNavigationBar() {
@@ -213,7 +205,6 @@ class CameraDemoActivity : AppCompatActivity(), ConnectCheckerRtsp, View.OnClick
                 rtspServerCamera1.startStream()
                 tv_url.text = rtspServerCamera1.getEndPointConnection()
                 val t = rtspServerCamera1.getEndPointConnection()
-Log.d("Avijit", t)
             } else {
                 Toast.makeText(
                     this,
@@ -335,6 +326,13 @@ Log.d("Avijit", t)
 
     override fun surfaceChanged(surfaceHolder: SurfaceHolder, i: Int, i1: Int, i2: Int) {
         rtspServerCamera1.startPreview()
+
+        when(vStreaming){
+            true -> rtspStreaming()
+        }
+        when(vRecoding){
+            true->videoRecording()
+        }
     }
 
     override fun surfaceDestroyed(surfaceHolder: SurfaceHolder) {
