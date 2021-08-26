@@ -56,7 +56,7 @@ class CameraDemoActivity : AppCompatActivity(), ConnectCheckerRtsp, View.OnClick
         if (savedInstanceState == null) {
             val extras = intent.extras
 
-            if(extras != null) {
+            if (extras != null) {
                 vRecoding = extras.getBoolean("isVideoRecordingEnabled")
                 vStreaming = extras.getBoolean("isVideoStreamingEnabled")
             }
