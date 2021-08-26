@@ -62,11 +62,6 @@ class CameraDemoActivity : AppCompatActivity(), ConnectCheckerRtsp, View.OnClick
             }
         }
 
-        button = findViewById(R.id.b_start_stop)
-        button.setOnClickListener(this)
-        bRecord = findViewById(R.id.b_record)
-        bRecord.setOnClickListener(this)
-        capture_image.setOnClickListener(this)
         rtspServerCamera1 = RtspServerCamera1(surfaceView, this, 1935)
         surfaceView.holder.addCallback(this)
 
@@ -76,8 +71,13 @@ class CameraDemoActivity : AppCompatActivity(), ConnectCheckerRtsp, View.OnClick
             captureScreenShot()
         })
 
-//        ll_buttonList.visibility = View.INVISIBLE
+        when(vStreaming){
+            true -> rtspStreaming()
+        }
 
+        when(vRecoding){
+            true->videoRecording()
+        }
     }
 
     private fun hideNavigationBar() {
@@ -172,19 +172,6 @@ class CameraDemoActivity : AppCompatActivity(), ConnectCheckerRtsp, View.OnClick
 
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onClick(view: View) {
-        when (view.id) {
-            R.id.b_start_stop -> {
-                rtspStreaming()
-            }
-            R.id.capture_image -> {
-                captureScreenShot()
-            }
-            R.id.b_record -> {
-                videoRecording()
-            }
-            else -> {
-            }
-        }
     }
 
     private fun videoRecording() {
@@ -194,7 +181,6 @@ class CameraDemoActivity : AppCompatActivity(), ConnectCheckerRtsp, View.OnClick
                     if (!rtspServerCamera1.isStreaming) {
                         if (rtspServerCamera1.prepareAudio() && rtspServerCamera1.prepareVideo()) {
                             rtspServerCamera1.startRecord(getOutputMediaFile(SupportedFileType.TYPE_MP4).toString())
-                            bRecord.setText(R.string.stop_record)
                             Toast.makeText(this, "Recording... ", Toast.LENGTH_SHORT).show()
                         } else {
                             Toast.makeText(
@@ -204,22 +190,13 @@ class CameraDemoActivity : AppCompatActivity(), ConnectCheckerRtsp, View.OnClick
                         }
                     } else {
                         rtspServerCamera1.startRecord(getOutputMediaFile(SupportedFileType.TYPE_MP4).toString())
-                        bRecord.setText(R.string.stop_record)
                         Toast.makeText(this, "Recording... ", Toast.LENGTH_SHORT).show()
                     }
                 } catch (e: IOException) {
                     rtspServerCamera1.stopRecord()
-                    bRecord.setText(R.string.start_record)
                     Toast.makeText(this, e.message, Toast.LENGTH_SHORT).show()
                 }
             } else {
-                rtspServerCamera1.stopRecord()
-                bRecord.setText(R.string.start_record)
-                Toast.makeText(
-                    this,
-                    getOutputMediaFile(SupportedFileType.TYPE_MP4).toString(),
-                    Toast.LENGTH_SHORT
-                ).show()
             }
         } else {
             Toast.makeText(
@@ -233,9 +210,10 @@ class CameraDemoActivity : AppCompatActivity(), ConnectCheckerRtsp, View.OnClick
     private fun rtspStreaming() {
         if (!rtspServerCamera1.isStreaming) {
             if (rtspServerCamera1.isRecording || rtspServerCamera1.prepareAudio() && rtspServerCamera1.prepareVideo()) {
-                button.setText(R.string.stop_button)
                 rtspServerCamera1.startStream()
                 tv_url.text = rtspServerCamera1.getEndPointConnection()
+                val t = rtspServerCamera1.getEndPointConnection()
+Log.d("Avijit", t)
             } else {
                 Toast.makeText(
                     this,
@@ -245,8 +223,6 @@ class CameraDemoActivity : AppCompatActivity(), ConnectCheckerRtsp, View.OnClick
                     .show()
             }
         } else {
-            button.setText(R.string.start_button)
-            rtspServerCamera1.stopStream()
             tv_url.text = ""
         }
     }

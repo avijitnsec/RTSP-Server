@@ -23,41 +23,4 @@
         android:layout_margin="20dp"
         android:id="@+id/tv_url"
         />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_alignParentBottom="true"
-        android:layout_margin="20dp"
-        android:gravity="center"
-        android:id="@+id/ll_buttonList"
-        android:weightSum="3">
-
-        <Button
-            android:layout_weight="1"
-            android:text="@string/start_record"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="5dp"
-            android:id="@+id/b_record"
-            android:layout_marginEnd="5dp" />
-
-        <Button
-            android:layout_weight="1"
-            android:text="@string/start_button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="5dp"
-            android:id="@+id/b_start_stop"
-            android:layout_marginEnd="5dp" />
-
-        <Button
-            android:layout_weight="1"
-            android:text="@string/capture_image"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:id="@+id/capture_image"
-            />
-    </LinearLayout>
 </RelativeLayout>
