@@ -24,6 +24,7 @@ class MainActivity : AppCompatActivity(), OnCircleMenuItemClicked {
 
     private var isVideoRecordingEnabled = false
     private var isVideoStreamingEnabled = false
+    private var wifiEnable = false
 
     private val PERMISSIONS = arrayOf(
         Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA,
@@ -53,27 +54,35 @@ class MainActivity : AppCompatActivity(), OnCircleMenuItemClicked {
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     @SuppressLint("ResourceType", "UseCompatLoadingForDrawables")
     override fun onMenuItemClicked(id: Int) {
+        var drawable = findViewById<FloatingActionButton>(id)
         when (id) {
             R.drawable.ic_baseline_rtsp_start_streaming_24 -> {
                 isVideoStreamingEnabled = !isVideoStreamingEnabled
-                if (isVideoStreamingEnabled) {
-                    var drawable = findViewById<FloatingActionButton>(id)
-                    drawable.setImageResource(R.drawable.ic_baseline_rtsp_stop_streaming_24)
+
+                var newId: Int = when(isVideoStreamingEnabled) {
+                    false -> R.drawable.ic_baseline_rtsp_start_streaming_24
+                    true -> R.drawable.ic_baseline_rtsp_stop_streaming_24
                 }
+                drawable.setImageResource(newId)
             }
             R.drawable.ic_baseline_video_start_recording_24 -> {
                 isVideoRecordingEnabled = !isVideoRecordingEnabled
-                if (isVideoRecordingEnabled) {
-                    var drawable = findViewById<FloatingActionButton>(id)
-                    drawable.setImageResource(R.drawable.ic_baseline_video_recording_24)
+
+                var newId: Int = when(isVideoRecordingEnabled) {
+                    false -> R.drawable.ic_baseline_video_start_recording_24
+                    true -> R.drawable.ic_baseline_video_recording_24
                 }
+                drawable.setImageResource(newId)
             }
             R.drawable.ic_baseline_wifi_signal_strong_24 -> {
-                isVideoRecordingEnabled = !isVideoRecordingEnabled
-                if (isVideoRecordingEnabled) {
-                    var drawable = findViewById<FloatingActionButton>(id)
-                    drawable.setImageResource(R.drawable.ic_baseline_wifi_signal_no_24)
+                wifiEnable = !wifiEnable
+
+                var newId: Int = when(wifiEnable) {
+                    false -> R.drawable.ic_baseline_wifi_signal_strong_24
+                    true -> R.drawable.ic_baseline_wifi_signal_no_24
                 }
+                drawable.setImageResource(newId)
+
             }
         }
     }
